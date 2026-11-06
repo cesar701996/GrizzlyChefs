@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { ChapterProof, ChaptersSection, GreekEvents } from "./Chapters";
-import { NutritionDialog, type Dish } from "./Nutrition";
+import { FactsLine, NutritionDialog, type Dish } from "./Nutrition";
 import { SocialSection } from "./Social";
 import { Dialog, ORDER, SITE, TC, btnForest, btnHoney, btnOutline, cssVars, img } from "./shared";
 
@@ -28,21 +28,21 @@ const LOGO = img("logo.png");
 
 // w/h are each photo's real pixel size, so the browser reserves the right space.
 const dishes: Dish[] = [
-  { h: `${P}/cheeseburger`, n: "Classic Cheeseburger and Fries", p: "from $10.50", src: img("cheeseburger.jpg"), w: 800, hgt: 680, alt: "Classic cheeseburger with melted cheese on a toasted bun, served with golden fries",
+  { h: `${P}/cheeseburger`, n: "Classic Cheeseburger and Fries", p: "from $10.50", src: img("cheeseburger.jpg"), facts: { serving: "1 order (burger and fries)", cal: 1050, protein: 35, carbs: 95, fat: 58 }, w: 800, hgt: 680, alt: "Classic cheeseburger with melted cheese on a toasted bun, served with golden fries",
     inside: ["1/3 lb grilled beef patty", "Cheddar", "Lettuce", "Tomato", "Dill pickles", "Toasted bun", "Fries"], options: "Make it an Impossible (plant-based) burger for $11.50." },
-  { h: `${P}/chicken-and-waffles`, n: "Chicken and Waffles", p: "$12.99", src: img("waffles.jpg"), w: 800, hgt: 648, alt: "Crispy fried chicken served on top of fluffy golden waffles",
+  { h: `${P}/chicken-and-waffles`, n: "Chicken and Waffles", p: "$12.99", src: img("waffles.jpg"), facts: { serving: "1 order", cal: 1300, protein: 50, carbs: 140, fat: 60 }, w: 800, hgt: 648, alt: "Crispy fried chicken served on top of fluffy golden waffles",
     inside: ["Crispy fried chicken", "Waffles", "Seasonal fruit", "Powdered sugar", "Syrup on the side"] },
-  { h: `${P}/du3f6mmcyyln8cdzo3a5jbl8f064pj`, n: "Quesabirrias", p: "$12.50", src: img("quesabirria.jpg"), w: 800, hgt: 459, alt: "Crispy cheese-filled quesabirria tacos with a cup of consommé for dipping",
+  { h: `${P}/du3f6mmcyyln8cdzo3a5jbl8f064pj`, n: "Quesabirrias", p: "$12.50", src: img("quesabirria.jpg"), facts: { serving: "3 quesabirrias with consommé", cal: 950, protein: 55, carbs: 55, fat: 55 }, w: 800, hgt: 459, alt: "Crispy cheese-filled quesabirria tacos with a cup of consommé for dipping",
     inside: ["3 quesabirrias", "Birria beef", "Cheese", "Crispy tortillas", "Consommé for dipping"] },
-  { h: `${P}/harvest-moon-cup-5fc72-3b3jj`, n: "Chipotle Fried Chicken Sandwich and Fries", p: "from $11.99", src: img("chipotle.jpg"), w: 800, hgt: 702, alt: "Fried chicken sandwich with chipotle sauce on a bun, with a side of fries",
+  { h: `${P}/harvest-moon-cup-5fc72-3b3jj`, n: "Chipotle Fried Chicken Sandwich and Fries", p: "from $11.99", src: img("chipotle.jpg"), facts: { serving: "1 order (sandwich and fries)", cal: 1250, protein: 45, carbs: 115, fat: 65 }, w: 800, hgt: 702, alt: "Fried chicken sandwich with chipotle sauce on a bun, with a side of fries",
     inside: ["Hand-breaded chicken breast", "Chipotle sauce", "Creamy slaw", "Toasted bun", "Fries"], options: "Swap in vegetarian \u201cchicken\u201d strips for $12.99." },
-  { h: `${P}/feb5strrxgxj2lohuz6679109ls2u6`, n: "Breakfast Burrito", p: "from $8.99", src: img("burrito.jpg"), w: 800, hgt: 583, alt: "Breakfast burrito cut in half showing eggs, potatoes and cheese inside",
+  { h: `${P}/feb5strrxgxj2lohuz6679109ls2u6`, n: "Breakfast Burrito", p: "from $8.99", src: img("burrito.jpg"), facts: { serving: "1 regular burrito", cal: 850, protein: 35, carbs: 70, fat: 45 }, w: 800, hgt: 583, alt: "Breakfast burrito cut in half showing eggs, potatoes and cheese inside",
     inside: ["Flour tortilla", "Scrambled eggs", "Seasoned potatoes", "Cheese", "Salsa"], options: "The regular comes without meat; add chorizo, sausage or bacon for $9.99." },
-  { h: `${P}/todays-special`, n: "Orange Chicken and Steamed Rice", p: "$11.50", src: img("orange.jpg"), w: 800, hgt: 726, alt: "Glazed orange chicken pieces next to a scoop of white steamed rice",
+  { h: `${P}/todays-special`, n: "Orange Chicken and Steamed Rice", p: "$11.50", src: img("orange.jpg"), facts: { serving: "1 order (with steamed rice)", cal: 950, protein: 40, carbs: 130, fat: 30 }, w: 800, hgt: 726, alt: "Glazed orange chicken pieces next to a scoop of white steamed rice",
     inside: ["Orange chicken", "Steamed rice"], note: "The menu page describes this as orange chicken with chow mein, cookies and a drink." },
-  { h: `${P}/mangonada`, n: "Mangonada (24oz)", p: "$5.00", src: img("mangonada.jpg"), w: 506, hgt: 800, alt: "Large mangonada drink with mango, chamoy and chili, topped with a tamarind straw",
+  { h: `${P}/mangonada`, n: "Mangonada (24oz)", p: "$5.00", src: img("mangonada.jpg"), facts: { serving: "24 oz cup", cal: 420, sugar: 90 }, w: 506, hgt: 800, alt: "Large mangonada drink with mango, chamoy and chili, topped with a tamarind straw",
     inside: ["Mango purée", "Chamoy", "Tajín", "Fresh mango chunks"] },
-  { h: `${P}/double-cheese-burger`, n: "Double Cheese Burger", p: "from $11.75", src: img("double.jpg"), w: 800, hgt: 687, alt: "Double cheeseburger with two beef patties and melted cheese on a toasted bun",
+  { h: `${P}/double-cheese-burger`, n: "Double Cheese Burger", p: "from $11.75", src: img("double.jpg"), facts: { serving: "1 burger (without fries)", cal: 850, protein: 50, carbs: 40, fat: 55 }, w: 800, hgt: 687, alt: "Double cheeseburger with two beef patties and melted cheese on a toasted bun",
     inside: ["Two 1/3 lb beef patties", "American cheese", "Lettuce", "Tomato", "Signature sauce", "Toasted bun", "Fries"] },
 ];
 
@@ -91,7 +91,7 @@ const fixes = [
   "Real food photos with descriptive alt text, no stock images",
   "Every food photo shown whole, nothing cut off",
   "A section just for chapters: house pricing, Greek-calendar catering and Late Plate",
-  "Nutrition facts and ingredients on every dish (numbers to confirm)",
+  "Nutrition facts and ingredients on every dish (estimated numbers, to confirm)",
   "Gentle motion that makes the food pop (it switches off for anyone whose phone asks for less motion)",
   "Hours block that never cuts off or overlaps on phones",
   "No leftover template text, demo products or stray characters",
@@ -221,6 +221,7 @@ export default function App() {
                   <div className="flex flex-1 flex-col p-3 md:p-4">
                     <h3 className="font-bold leading-tight">{d.n}</h3>
                     <p className="mt-1 text-muted-foreground">{d.p}</p>
+                    {d.facts && <FactsLine f={d.facts} />}
                     <div className="mt-auto flex flex-wrap items-center justify-between gap-x-3 gap-y-1 pt-3">
                       <a href={d.h} className="font-bold text-forest underline underline-offset-4" aria-label={`Order ${d.n}`}>Order →</a>
                       <button type="button" onClick={() => setFacts(d)} className="min-h-9 rounded-full border border-border px-3 text-sm font-semibold hover:border-forest" aria-label={`Nutrition and ingredients for ${d.n}`}>Nutrition</button>
