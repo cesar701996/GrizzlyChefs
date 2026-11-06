@@ -30,12 +30,13 @@ npm run dev      # local preview at http://localhost:5173
 npm run build    # production build in dist/
 ```
 
-## Publish with GitHub Pages
+## Live site
 
-1. In this repo on GitHub, open **Settings → Pages**.
-2. Under **Build and deployment → Source**, choose **GitHub Actions**.
-3. Every push to `main` then builds and publishes the site to
-   `https://cesar701996.github.io/GrizzlyChefs/`.
+https://cesar701996.github.io/GrizzlyChefs/
+
+Every push to `main` rebuilds the site and publishes it to the `gh-pages`
+branch, which GitHub Pages serves (Settings → Pages → Deploy from a branch →
+`gh-pages`). The workflow is in `.github/workflows/deploy.yml`.
 
 The page carries `noindex` so search engines don't confuse it with the real site.
 
