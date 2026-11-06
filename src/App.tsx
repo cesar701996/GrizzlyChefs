@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { ChapterProof, ChaptersSection, GreekEvents } from "./Chapters";
 import { FactsLine, NutritionDialog, type Dish } from "./Nutrition";
+import { LiveLayer, type Live } from "./LivePhoto";
 import { SocialSection } from "./Social";
 import { StudyNight } from "./StudyNight";
 import { Dialog, ORDER, SITE, TC, btnForest, btnHoney, btnOutline, cssVars, img } from "./shared";
@@ -46,6 +47,18 @@ const dishes: Dish[] = [
   { h: `${P}/double-cheese-burger`, n: "Double Cheese Burger", p: "from $11.75", src: img("double.jpg"), facts: { serving: "1 burger (without fries)", cal: 850, protein: 50, carbs: 40, fat: 55 }, w: 800, hgt: 687, alt: "Double cheeseburger with two beef patties and melted cheese on a toasted bun",
     inside: ["Two 1/3 lb beef patties", "American cheese", "Lettuce", "Tomato", "Signature sauce", "Toasted bun", "Fries"] },
 ];
+
+// Live-photo effects per dish (x/y in % of each photo), placed on the steaming, melting or cold parts.
+const live: Record<string, Live[]> = {
+  [img("cheeseburger.jpg")]: [{ k: "drip", x: 55, y: 71, len: 8 }, { k: "drip", x: 71, y: 75, len: 6, d: 2.6 }, { k: "steam", x: 46, y: 24, s: 16, d: .4 }, { k: "glint", x: 30, y: 14, d: .5 }, { k: "glint", x: 63, y: 11, d: 2 }],
+  [img("waffles.jpg")]: [{ k: "steam", x: 22, y: 46, s: 14 }, { k: "steam", x: 38, y: 40, s: 12, d: 1.5 }, { k: "glint", x: 80, y: 33, d: .3 }, { k: "glint", x: 70, y: 72, d: 1.7 }, { k: "glint", x: 52, y: 20, d: 2.6 }],
+  [img("quesabirria.jpg")]: [{ k: "steam", x: 68, y: 52, s: 17 }, { k: "steam", x: 83, y: 46, s: 13, d: 1.3 }, { k: "steam", x: 28, y: 48, s: 12, d: .7 }, { k: "glint", x: 74, y: 30, d: 2 }],
+  [img("chipotle.jpg")]: [{ k: "steam", x: 34, y: 32, s: 14 }, { k: "steam", x: 68, y: 50, s: 13, d: 1.2 }, { k: "glint", x: 76, y: 42, d: .5 }, { k: "glint", x: 22, y: 20, d: 2.2 }],
+  [img("burrito.jpg")]: [{ k: "steam", x: 22, y: 34, s: 13 }, { k: "steam", x: 42, y: 27, s: 14, d: 1.4 }, { k: "glint", x: 32, y: 73, d: 1 }],
+  [img("orange.jpg")]: [{ k: "steam", x: 66, y: 58, s: 15 }, { k: "steam", x: 80, y: 63, s: 12, d: 1.3 }, { k: "glint", x: 60, y: 72, d: .3 }, { k: "glint", x: 78, y: 54, d: 1.8 }],
+  [img("mangonada.jpg")]: [{ k: "drop", x: 22, y: 28, dist: 650 }, { k: "drop", x: 77, y: 52, dist: 520, d: 2.4 }, { k: "glint", x: 36, y: 10, d: .6 }, { k: "glint", x: 66, y: 40, d: 2 }, { k: "glint", x: 30, y: 72, d: 3.1 }],
+  [img("double.jpg")]: [{ k: "drip", x: 19, y: 69, len: 8 }, { k: "drip", x: 63, y: 69, len: 6, d: 2.8 }, { k: "steam", x: 50, y: 22, s: 15, d: .5 }, { k: "glint", x: 35, y: 11, d: 1.2 }],
+};
 
 const services = [
   { t: "Delivery", d: "Order from the full menu and get it at your door fast, with no delivery fee.", h: ORDER, b: "Order now", src: img("wings.jpg"), w: 800, hgt: 738, alt: "Chicken wings with a side of fries, packed for delivery" },
@@ -94,6 +107,7 @@ const fixes = [
   "A section just for chapters: house pricing, Greek-calendar catering and Late Plate",
   "Nutrition facts and ingredients on every dish (estimated numbers, to confirm)",
   "Gentle motion that makes the food pop (it switches off for anyone whose phone asks for less motion)",
+  "Live menu photos: steam, melting cheese and a glossy shine drawn over the real photos, with no video files to slow the page",
   "Hours block that never cuts off or overlaps on phones",
   "No leftover template text, demo products or stray characters",
   "Fewer third-party widgets for a faster page",
@@ -218,6 +232,7 @@ export default function App() {
                   <div className="relative isolate aspect-square bg-white">
                     <div aria-hidden className="food-glow absolute inset-[8%] rounded-full" />
                     <img src={d.src} alt={d.alt} width={d.w} height={d.hgt} loading="lazy" className="food-photo absolute inset-0 h-full w-full object-contain p-3 mix-blend-multiply" />
+                    {live[d.src] && <LiveLayer src={d.src} w={d.w} h={d.hgt} fx={live[d.src]} />}
                   </div>
                   <div className="flex flex-1 flex-col p-3 md:p-4">
                     <h3 className="font-bold leading-tight">{d.n}</h3>
