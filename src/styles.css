@@ -80,12 +80,6 @@
 @keyframes gc-marquee { to { transform: translateX(-50%); } }
 @keyframes gc-pop { from { opacity: 0; transform: translateY(16px) scale(.97); } to { opacity: 1; transform: none; } }
 @keyframes gc-twinkle { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: .55; transform: scale(.82); } }
-/* live photos */
-@keyframes gc-steam { 0% { opacity: 0; transform: translateY(15%) scale(.45, .55); } 22% { opacity: .9; } 100% { opacity: 0; transform: translate(var(--sway, 5px), -75%) scale(1.2, 1.45); } }
-@keyframes gc-drip { 0% { height: 0; opacity: 0; } 6% { opacity: 1; } 62% { height: var(--len); } 86% { height: var(--len); opacity: 1; } 100% { height: var(--len); opacity: 0; } }
-@keyframes gc-glint { 0%, 64%, 100% { opacity: 0; transform: scale(.2) rotate(-20deg); } 80% { opacity: 1; transform: scale(1) rotate(10deg); } }
-@keyframes gc-slide { 0% { opacity: 0; transform: translateY(0); } 12% { opacity: 1; transform: translateY(0); } 30% { transform: translateY(18%); } 88% { opacity: 1; } 100% { opacity: 0; transform: translateY(var(--dist)); } }
-@keyframes gc-gloss { 0% { transform: translateX(-140%) skewX(-18deg); } 42%, 100% { transform: translateX(330%) skewX(-18deg); } }
 
 @layer components {
   /* fade-and-slide in, once, when scrolled into view (class "in" added by JS) */
@@ -118,35 +112,6 @@
     background: radial-gradient(circle, var(--confirm-bg) 0%, var(--confirm-bg) 52%, transparent 71%); }
   .food-card:hover .food-glow, .food-card:focus-within .food-glow { transform: scale(1.15); }
 
-  /* live photos: steam, melting cheese, sparkles and a glossy shine drawn over the real photo */
-  .live-gloss { position: absolute; inset: 0; overflow: hidden; mask-size: 100% 100%; -webkit-mask-size: 100% 100%; }
-  .live-gloss::after { content: ""; position: absolute; inset: -10% auto -10% 0; width: 30%;
-    background: linear-gradient(90deg, transparent, rgb(255 255 255 / .5), transparent);
-    animation: gc-gloss 6s ease-in-out infinite; animation-delay: var(--gd, .6s); }
-  .live-steam { position: absolute; left: var(--x); bottom: calc(100% - var(--y)); width: var(--s); aspect-ratio: 1 / 2.4; translate: -50% 0; }
-  .live-steam i { position: absolute; inset: 0; border-radius: 50%; opacity: 0; transform-origin: 50% 100%;
-    background: radial-gradient(closest-side, rgb(255 255 255 / .9), rgb(255 255 255 / .45) 50%, transparent);
-    filter: blur(4px); animation: gc-steam 3.6s ease-out infinite; animation-delay: var(--d); }
-  .live-steam i:nth-child(2) { --sway: -6px; left: -22%; animation-delay: calc(var(--d) + 1.2s); }
-  .live-steam i:nth-child(3) { --sway: 7px; left: 20%; animation-delay: calc(var(--d) + 2.4s); }
-  .live-drip { position: absolute; left: var(--x); top: var(--y); width: 2.2%; height: 0; translate: -50% 0;
-    border-radius: 0 0 999px 999px; box-shadow: 0 1px 1.5px rgb(110 55 0 / .3);
-    background: linear-gradient(90deg, #e08d0b, #ffd35a 40%, #f5ad1e 72%, #d4860a);
-    animation: gc-drip 6s cubic-bezier(.45,0,.6,1) infinite; animation-delay: var(--d); }
-  .live-drip::after { content: ""; position: absolute; left: 50%; bottom: 0; width: 210%; aspect-ratio: 5 / 6; translate: -50% 45%;
-    border-radius: 50% 50% 50% 50% / 42% 42% 58% 58%; background: radial-gradient(circle at 38% 35%, #ffe08a, #f5ad1e 55%, #d4860a); }
-  .live-glint { position: absolute; left: var(--x); top: var(--y); width: var(--s); aspect-ratio: 1; translate: -50% -50%; opacity: 0;
-    background: #fff; filter: drop-shadow(0 0 3px #fff);
-    clip-path: polygon(50% 0, 55% 45%, 100% 50%, 55% 55%, 50% 100%, 45% 55%, 0 50%, 45% 45%);
-    animation: gc-glint 3.4s ease-in-out infinite; animation-delay: var(--d); }
-  .live-drop { position: absolute; left: var(--x); top: var(--y); width: 4.5%; aspect-ratio: 3 / 4; translate: -50% 0; opacity: 0;
-    border-radius: 50% 50% 50% 50% / 60% 60% 42% 42%;
-    background: radial-gradient(circle at 35% 30%, rgb(255 255 255 / .95) 0 16%, rgb(255 255 255 / .35) 30%, rgb(255 255 255 / .1) 62%);
-    box-shadow: inset 0 -1.5px 1.5px rgb(150 50 0 / .35), 0 1px 1px rgb(255 255 255 / .6);
-    animation: gc-slide 5.2s ease-in infinite; animation-delay: var(--d); }
-  /* nothing moves until the card has scrolled into view */
-  .reveal:not(.in) .live *, .reveal:not(.in) .live *::after, .reveal:not(.in) .live i { animation-play-state: paused; }
-
   /* study-night to-do: the last box ticks and its text gets crossed out once in view */
   .study-card { background-image: repeating-linear-gradient(transparent 0 35px, rgb(150 180 220 / .28) 35px 36px); }
   .study-card .tick { transform: scale(0) rotate(-30deg); transition: transform .45s cubic-bezier(.3,1.6,.5,1) .8s; }
@@ -167,6 +132,5 @@
   .study-card .tick { transform: none; transition: none; }
   .study-card .strike { background-size: 100% 2px; transition: none; }
   .food-card, .food-photo, .food-glow { transition: none; }
-  .live { display: none; }
   .food-card:hover, .food-card:hover .food-photo, .food-card:hover .food-glow { transform: none; }
 }
