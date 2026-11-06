@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { ChapterProof, ChaptersSection, GreekEvents } from "./Chapters";
 import { FactsLine, NutritionDialog, type Dish } from "./Nutrition";
 import { SocialSection } from "./Social";
+import { StudyNight } from "./StudyNight";
 import { Dialog, ORDER, SITE, TC, btnForest, btnHoney, btnOutline, cssVars, img } from "./shared";
 
 // Adds the "in" class to every .reveal element once it scrolls into view.
@@ -104,7 +105,7 @@ const socials = [
   { l: "TikTok", h: "https://www.tiktok.com/@grizzlychefs", d: "M16.6 2h-3.4v13.4a2.9 2.9 0 11-2-2.8V9.2a6.3 6.3 0 105.4 6.2V8.6a7.9 7.9 0 004.4 1.4V6.6a4.5 4.5 0 01-4.4-4.6z" },
 ];
 
-const ticker = ["Quesabirrias", "Munch Box", "Chicken & Waffles", "Mangonada", "Breakfast Burritos", "Double Cheese Burger", "Orange Chicken", "Late Plate for chapters", "No delivery fee", "At your door in ~15 min"];
+const ticker = ["Quesabirrias", "Munch Box", "Chicken & Waffles", "Mangonada", "Breakfast Burritos", "Double Cheese Burger", "Orange Chicken", "Late Plate for chapters", "Study fuel", "No delivery fee", "At your door in ~15 min"];
 
 export default function App() {
   const [banner, setBanner] = useState(true);
@@ -234,6 +235,8 @@ export default function App() {
             <div className="mt-8 text-center"><a href={ORDER} className={btnForest}>See full menu</a></div>
           </div>
         </section>
+
+        <StudyNight />
 
         {/* Services */}
         <section id="services" className="mx-auto max-w-6xl px-4 py-16">

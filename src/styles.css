@@ -112,6 +112,12 @@
     background: radial-gradient(circle, var(--confirm-bg) 0%, var(--confirm-bg) 52%, transparent 71%); }
   .food-card:hover .food-glow, .food-card:focus-within .food-glow { transform: scale(1.15); }
 
+  /* study-night to-do: the last box ticks and its text gets crossed out once in view */
+  .study-card { background-image: repeating-linear-gradient(transparent 0 35px, rgb(150 180 220 / .28) 35px 36px); }
+  .study-card .tick { transform: scale(0) rotate(-30deg); transition: transform .45s cubic-bezier(.3,1.6,.5,1) .8s; }
+  .study-card.in .tick { transform: none; }
+  .study-card .strike { background: linear-gradient(currentColor, currentColor) 0 58% / 0% 2px no-repeat; transition: background-size .5s ease 1.2s; }
+  .study-card.in .strike { background-size: 100% 2px; }
   .dialog-pop { animation: gc-pop .28s cubic-bezier(.2,.8,.2,1) both; }
   .twinkle > span { display: inline-block; animation: gc-twinkle 2.4s ease-in-out infinite; }
   .twinkle > span:nth-child(2) { animation-delay: .2s; } .twinkle > span:nth-child(3) { animation-delay: .4s; }
@@ -123,6 +129,8 @@
   .reveal, .reveal.in { opacity: 1; transform: none; transition: none; }
   .dialog-pop, .rise, .anim-float, .anim-bob, .blob, .marquee, .sheen::after, .twinkle > span { animation: none !important; }
   .marquee-wrap { overflow-x: auto; }
+  .study-card .tick { transform: none; transition: none; }
+  .study-card .strike { background-size: 100% 2px; transition: none; }
   .food-card, .food-photo, .food-glow { transition: none; }
   .food-card:hover, .food-card:hover .food-photo, .food-card:hover .food-glow { transform: none; }
 }
