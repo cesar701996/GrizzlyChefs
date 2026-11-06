@@ -1,7 +1,8 @@
-import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
-
-// lets us pass CSS custom properties (animation delays etc.) through style={}
-const cssVars = (o: Record<string, string>) => o as CSSProperties;
+import { useEffect, useState } from "react";
+import { ChapterProof, ChaptersSection, GreekEvents } from "./Chapters";
+import { NutritionDialog, type Dish } from "./Nutrition";
+import { SocialSection } from "./Social";
+import { Dialog, ORDER, SITE, TC, btnForest, btnHoney, btnOutline, cssVars, img } from "./shared";
 
 // Adds the "in" class to every .reveal element once it scrolls into view.
 function useReveal() {
@@ -22,31 +23,27 @@ function useReveal() {
   }, []);
 }
 
-const SITE = "https://grizzlychefs.com";
-const ORDER = `${SITE}/online-order`;
 const P = `${ORDER}/p`;
-
-// Photos live in public/images. They are the restaurant's own photos with the
-// extra white margin trimmed off, so every dish can be shown whole (no cropping).
-const img = (name: string) => `${import.meta.env.BASE_URL}images/${name}`;
 const LOGO = img("logo.png");
 
-const TC = ({ children = "To confirm" }: { children?: ReactNode }) => (
-  <span className="confirm-pill" title="Placeholder: needs the owner's details">
-    {children}
-  </span>
-);
-
 // w/h are each photo's real pixel size, so the browser reserves the right space.
-const dishes = [
-  { h: `${P}/cheeseburger`, n: "Classic Cheeseburger and Fries", p: "from $10.50", src: img("cheeseburger.jpg"), w: 800, hgt: 680, alt: "Classic cheeseburger with melted cheese on a toasted bun, served with golden fries" },
-  { h: `${P}/chicken-and-waffles`, n: "Chicken and Waffles", p: "$12.99", src: img("waffles.jpg"), w: 800, hgt: 648, alt: "Crispy fried chicken served on top of fluffy golden waffles" },
-  { h: `${P}/du3f6mmcyyln8cdzo3a5jbl8f064pj`, n: "Quesabirrias", p: "$12.50", src: img("quesabirria.jpg"), w: 800, hgt: 459, alt: "Crispy cheese-filled quesabirria tacos with a cup of consommé for dipping" },
-  { h: `${P}/harvest-moon-cup-5fc72-3b3jj`, n: "Chipotle Fried Chicken Sandwich and Fries", p: "from $11.99", src: img("chipotle.jpg"), w: 800, hgt: 702, alt: "Fried chicken sandwich with chipotle sauce on a bun, with a side of fries" },
-  { h: `${P}/feb5strrxgxj2lohuz6679109ls2u6`, n: "Breakfast Burrito", p: "from $8.99", src: img("burrito.jpg"), w: 800, hgt: 583, alt: "Breakfast burrito cut in half showing eggs, potatoes and cheese inside" },
-  { h: `${P}/todays-special`, n: "Orange Chicken and Steamed Rice", p: "$11.50", src: img("orange.jpg"), w: 800, hgt: 726, alt: "Glazed orange chicken pieces next to a scoop of white steamed rice" },
-  { h: `${P}/mangonada`, n: "Mangonada (24oz)", p: "$5.00", src: img("mangonada.jpg"), w: 506, hgt: 800, alt: "Large mangonada drink with mango, chamoy and chili, topped with a tamarind straw" },
-  { h: `${P}/double-cheese-burger`, n: "Double Cheese Burger", p: "from $11.75", src: img("double.jpg"), w: 800, hgt: 687, alt: "Double cheeseburger with two beef patties and melted cheese on a toasted bun" },
+const dishes: Dish[] = [
+  { h: `${P}/cheeseburger`, n: "Classic Cheeseburger and Fries", p: "from $10.50", src: img("cheeseburger.jpg"), w: 800, hgt: 680, alt: "Classic cheeseburger with melted cheese on a toasted bun, served with golden fries",
+    inside: ["1/3 lb grilled beef patty", "Cheddar", "Lettuce", "Tomato", "Dill pickles", "Toasted bun", "Fries"], options: "Make it an Impossible (plant-based) burger for $11.50." },
+  { h: `${P}/chicken-and-waffles`, n: "Chicken and Waffles", p: "$12.99", src: img("waffles.jpg"), w: 800, hgt: 648, alt: "Crispy fried chicken served on top of fluffy golden waffles",
+    inside: ["Crispy fried chicken", "Waffles", "Seasonal fruit", "Powdered sugar", "Syrup on the side"] },
+  { h: `${P}/du3f6mmcyyln8cdzo3a5jbl8f064pj`, n: "Quesabirrias", p: "$12.50", src: img("quesabirria.jpg"), w: 800, hgt: 459, alt: "Crispy cheese-filled quesabirria tacos with a cup of consommé for dipping",
+    inside: ["3 quesabirrias", "Birria beef", "Cheese", "Crispy tortillas", "Consommé for dipping"] },
+  { h: `${P}/harvest-moon-cup-5fc72-3b3jj`, n: "Chipotle Fried Chicken Sandwich and Fries", p: "from $11.99", src: img("chipotle.jpg"), w: 800, hgt: 702, alt: "Fried chicken sandwich with chipotle sauce on a bun, with a side of fries",
+    inside: ["Hand-breaded chicken breast", "Chipotle sauce", "Creamy slaw", "Toasted bun", "Fries"], options: "Swap in vegetarian \u201cchicken\u201d strips for $12.99." },
+  { h: `${P}/feb5strrxgxj2lohuz6679109ls2u6`, n: "Breakfast Burrito", p: "from $8.99", src: img("burrito.jpg"), w: 800, hgt: 583, alt: "Breakfast burrito cut in half showing eggs, potatoes and cheese inside",
+    inside: ["Flour tortilla", "Scrambled eggs", "Seasoned potatoes", "Cheese", "Salsa"], options: "The regular comes without meat; add chorizo, sausage or bacon for $9.99." },
+  { h: `${P}/todays-special`, n: "Orange Chicken and Steamed Rice", p: "$11.50", src: img("orange.jpg"), w: 800, hgt: 726, alt: "Glazed orange chicken pieces next to a scoop of white steamed rice",
+    inside: ["Orange chicken", "Steamed rice"], note: "The menu page describes this as orange chicken with chow mein, cookies and a drink." },
+  { h: `${P}/mangonada`, n: "Mangonada (24oz)", p: "$5.00", src: img("mangonada.jpg"), w: 506, hgt: 800, alt: "Large mangonada drink with mango, chamoy and chili, topped with a tamarind straw",
+    inside: ["Mango purée", "Chamoy", "Tajín", "Fresh mango chunks"] },
+  { h: `${P}/double-cheese-burger`, n: "Double Cheese Burger", p: "from $11.75", src: img("double.jpg"), w: 800, hgt: 687, alt: "Double cheeseburger with two beef patties and melted cheese on a toasted bun",
+    inside: ["Two 1/3 lb beef patties", "American cheese", "Lettuce", "Tomato", "Signature sauce", "Toasted bun", "Fries"] },
 ];
 
 const services = [
@@ -72,7 +69,7 @@ const nav = [
   ["Order", "#popular"],
   ["Catering", "#services"],
   ["Meal Plans", "#meal-plans"],
-  ["Late Plate", "#late-plate"],
+  ["Chapters", "#chapters"],
   ["Contact", "#contact"],
 ];
 
@@ -93,6 +90,8 @@ const fixes = [
   "Meal plan prices shown up front",
   "Real food photos with descriptive alt text, no stock images",
   "Every food photo shown whole, nothing cut off",
+  "A section just for chapters: house pricing, Greek-calendar catering and Late Plate",
+  "Nutrition facts and ingredients on every dish (numbers to confirm)",
   "Gentle motion that makes the food pop (it switches off for anyone whose phone asks for less motion)",
   "Hours block that never cuts off or overlaps on phones",
   "No leftover template text, demo products or stray characters",
@@ -105,17 +104,14 @@ const socials = [
   { l: "TikTok", h: "https://www.tiktok.com/@grizzlychefs", d: "M16.6 2h-3.4v13.4a2.9 2.9 0 11-2-2.8V9.2a6.3 6.3 0 105.4 6.2V8.6a7.9 7.9 0 004.4 1.4V6.6a4.5 4.5 0 01-4.4-4.6z" },
 ];
 
-const ticker = ["Quesabirrias", "Munch Box", "Chicken & Waffles", "Mangonada", "Breakfast Burritos", "Double Cheese Burger", "Orange Chicken", "No delivery fee", "At your door in ~15 min"];
-
-const btnHoney = "pill-btn bg-honey text-honey-foreground hover:brightness-105";
-const btnForest = "pill-btn bg-forest text-forest-foreground hover:opacity-90";
-const btnOutline = "pill-btn border-2 border-forest text-forest hover:bg-forest hover:text-forest-foreground";
+const ticker = ["Quesabirrias", "Munch Box", "Chicken & Waffles", "Mangonada", "Breakfast Burritos", "Double Cheese Burger", "Orange Chicken", "Late Plate for chapters", "No delivery fee", "At your door in ~15 min"];
 
 export default function App() {
   const [banner, setBanner] = useState(true);
   const [menu, setMenu] = useState(false);
   const [panel, setPanel] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [facts, setFacts] = useState<Dish | null>(null);
   useReveal();
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 8);
@@ -225,7 +221,10 @@ export default function App() {
                   <div className="flex flex-1 flex-col p-3 md:p-4">
                     <h3 className="font-bold leading-tight">{d.n}</h3>
                     <p className="mt-1 text-muted-foreground">{d.p}</p>
-                    <a href={d.h} className="mt-auto pt-3 font-bold text-forest underline underline-offset-4" aria-label={`Order ${d.n}`}>Order →</a>
+                    <div className="mt-auto flex flex-wrap items-center justify-between gap-x-3 gap-y-1 pt-3">
+                      <a href={d.h} className="font-bold text-forest underline underline-offset-4" aria-label={`Order ${d.n}`}>Order →</a>
+                      <button type="button" onClick={() => setFacts(d)} className="min-h-9 rounded-full border border-border px-3 text-sm font-semibold hover:border-forest" aria-label={`Nutrition and ingredients for ${d.n}`}>Nutrition</button>
+                    </div>
                   </div>
                   </div>
                 </li>
@@ -277,15 +276,22 @@ export default function App() {
           </div>
         </section>
 
+        <ChaptersSection />
+
         {/* Late plate: 3:4 photo in a 3:4 frame */}
         <section id="late-plate" className="mx-auto grid max-w-6xl items-center gap-10 px-4 py-16 md:grid-cols-2">
           <div className="reveal">
-            <h2 className="text-3xl font-black md:text-4xl">Late Plate for chapters</h2>
-            <p className="mt-4 text-lg text-muted-foreground">Fraternity and sorority chapters get members' meals saved and delivered after events and late meetings. Members sign in with their chapter login. <TC>To confirm exact description</TC></p>
+            <p className="text-sm font-bold uppercase tracking-widest text-confirm">Late Plate for chapters</p>
+            <h2 className="mt-2 text-3xl font-black md:text-5xl">Late meeting? We saved you a plate.</h2>
+            <p className="mt-4 text-lg text-muted-foreground">Chapter members get their meals saved and delivered after events and late meetings. Sign in with your chapter login. <TC>To confirm exact description</TC></p>
             <a href={`${SITE}/chapter-login`} className={`${btnForest} mt-6`}>Chapter sign in</a>
           </div>
           <img src={img("lateplate.jpg")} width={600} height={800} alt="Plated Grizzly Chefs meal saved as a late plate for a chapter member" loading="lazy" className="reveal mx-auto aspect-[3/4] w-full max-w-md rounded-3xl object-cover shadow-xl" style={cssVars({ "--d": "120ms" })} />
         </section>
+
+        <GreekEvents />
+        <ChapterProof />
+        <SocialSection />
 
         {/* Reviews */}
         <section id="reviews" className="bg-secondary py-16">
@@ -373,40 +379,17 @@ export default function App() {
         <a href={ORDER} className={`${btnHoney} sheen w-full whitespace-nowrap`}>Order now</a>
       </div>
       {panel && <ChangesPanel onClose={() => setPanel(false)} />}
+      {facts && <NutritionDialog dish={facts} onClose={() => setFacts(null)} />}
     </>
   );
 }
 
 function ChangesPanel({ onClose }: { onClose: () => void }) {
-  const ref = useRef<HTMLDivElement>(null);
-  useEffect(() => {
-    const prev = document.activeElement as HTMLElement | null;
-    ref.current?.querySelector<HTMLElement>("button")?.focus();
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
-      if (e.key === "Tab" && ref.current) {
-        const f = ref.current.querySelectorAll<HTMLElement>("button, a[href]");
-        const first = f[0], last = f[f.length - 1];
-        if (!first || !last) return;
-        if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
-        else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
-      }
-    };
-    document.addEventListener("keydown", onKey);
-    return () => { document.removeEventListener("keydown", onKey); prev?.focus(); };
-  }, [onClose]);
   return (
-    <div className="fixed inset-0 z-50">
-      <div className="absolute inset-0 bg-forest/60" onClick={onClose} aria-hidden />
-      <div ref={ref} role="dialog" aria-modal="true" aria-labelledby="changes-title" className="absolute inset-y-0 left-0 w-full max-w-md overflow-y-auto bg-background p-6 shadow-2xl">
-        <div className="flex items-center justify-between">
-          <h2 id="changes-title" className="text-2xl font-black">What this concept fixes</h2>
-          <button onClick={onClose} aria-label="Close" className="grid h-11 w-11 place-items-center rounded-full text-xl hover:bg-muted">✕</button>
-        </div>
-        <ul className="mt-6 space-y-3">
-          {fixes.map((f) => <li key={f} className="flex gap-3"><span className="font-black text-confirm" aria-hidden>✓</span>{f}</li>)}
-        </ul>
-      </div>
-    </div>
+    <Dialog title="What this concept fixes" onClose={onClose} variant="drawer">
+      <ul className="mt-6 space-y-3">
+        {fixes.map((f) => <li key={f} className="flex gap-3"><span className="font-black text-confirm" aria-hidden>✓</span>{f}</li>)}
+      </ul>
+    </Dialog>
   );
 }

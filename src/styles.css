@@ -78,6 +78,7 @@
 @keyframes gc-spin { to { transform: rotate(360deg); } }
 @keyframes gc-sheen { 0% { transform: translateX(-150%) skewX(-20deg); } 55%, 100% { transform: translateX(350%) skewX(-20deg); } }
 @keyframes gc-marquee { to { transform: translateX(-50%); } }
+@keyframes gc-pop { from { opacity: 0; transform: translateY(16px) scale(.97); } to { opacity: 1; transform: none; } }
 @keyframes gc-twinkle { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: .55; transform: scale(.82); } }
 
 @layer components {
@@ -111,6 +112,7 @@
     background: radial-gradient(circle, var(--confirm-bg) 0%, var(--confirm-bg) 52%, transparent 71%); }
   .food-card:hover .food-glow, .food-card:focus-within .food-glow { transform: scale(1.15); }
 
+  .dialog-pop { animation: gc-pop .28s cubic-bezier(.2,.8,.2,1) both; }
   .twinkle > span { display: inline-block; animation: gc-twinkle 2.4s ease-in-out infinite; }
   .twinkle > span:nth-child(2) { animation-delay: .2s; } .twinkle > span:nth-child(3) { animation-delay: .4s; }
   .twinkle > span:nth-child(4) { animation-delay: .6s; } .twinkle > span:nth-child(5) { animation-delay: .8s; }
@@ -119,7 +121,7 @@
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   .reveal, .reveal.in { opacity: 1; transform: none; transition: none; }
-  .rise, .anim-float, .anim-bob, .blob, .marquee, .sheen::after, .twinkle > span { animation: none !important; }
+  .dialog-pop, .rise, .anim-float, .anim-bob, .blob, .marquee, .sheen::after, .twinkle > span { animation: none !important; }
   .marquee-wrap { overflow-x: auto; }
   .food-card, .food-photo, .food-glow { transition: none; }
   .food-card:hover, .food-card:hover .food-photo, .food-card:hover .food-glow { transform: none; }
