@@ -1,0 +1,69 @@
+@import "tailwindcss";
+
+/*
+ * Grizzly Chefs concept colors (oklch).
+ * honey = brand yellow, forest = brand dark green,
+ * confirm = the dashed "To confirm" placeholder pills.
+ */
+@theme inline {
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 8px);
+  --radius-3xl: calc(var(--radius) + 12px);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-secondary: var(--secondary);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-border: var(--border);
+  --color-honey: var(--honey);
+  --color-honey-foreground: var(--honey-foreground);
+  --color-forest: var(--forest);
+  --color-forest-foreground: var(--forest-foreground);
+  --color-confirm: var(--confirm);
+  --color-confirm-bg: var(--confirm-bg);
+  --font-display: "Archivo", system-ui, sans-serif;
+  --font-sans: "Archivo", system-ui, sans-serif;
+}
+
+:root {
+  --radius: 1rem;
+  --background: oklch(0.975 0.008 85);
+  --foreground: oklch(0.25 0.02 155);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.25 0.02 155);
+  --secondary: oklch(0.94 0.02 85);
+  --muted: oklch(0.94 0.015 85);
+  --muted-foreground: oklch(0.42 0.02 155);
+  --honey: oklch(0.79 0.165 78);
+  --honey-foreground: oklch(0.22 0.02 155);
+  --forest: oklch(0.25 0.02 155);
+  --forest-foreground: oklch(0.975 0.008 85);
+  --confirm: oklch(0.5 0.12 60);
+  --confirm-bg: oklch(0.96 0.06 85);
+  --border: oklch(0.89 0.02 85);
+  --ring: oklch(0.79 0.165 78);
+}
+
+@layer base {
+  * { border-color: var(--color-border); }
+  body { background-color: var(--color-background); color: var(--color-foreground); font-family: var(--font-sans); }
+  h1, h2, h3 { font-family: var(--font-display); letter-spacing: -0.02em; }
+  html { scroll-behavior: smooth; scroll-padding-top: 5rem; }
+}
+
+@utility pill-btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: .5rem;
+  min-height: 48px; padding: 0 1.5rem; border-radius: 9999px; font-weight: 700;
+  transition: transform .15s, background-color .15s;
+  &:hover { transform: translateY(-1px); }
+  &:focus-visible { outline: 3px solid var(--ring); outline-offset: 2px; }
+}
+
+@utility confirm-pill {
+  display: inline-block; padding: .05rem .55rem; border-radius: 9999px;
+  border: 2px dashed var(--confirm); background: var(--confirm-bg); color: var(--confirm);
+  font-weight: 600; font-size: .9em; white-space: normal;
+}
