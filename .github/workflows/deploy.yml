@@ -2,9 +2,11 @@ name: Publish to GitHub Pages
 
 # Every push to main builds the site and publishes dist/ to the gh-pages
 # branch, which GitHub Pages serves at cesar701996.github.io/GrizzlyChefs/.
+# Pushes to motion-preview publish to .../GrizzlyChefs/preview/ instead, so a
+# new version can be tried without touching the main demo.
 on:
   push:
-    branches: [main]
+    branches: [main, motion-preview]
   workflow_dispatch:
 
 permissions:
@@ -29,3 +31,5 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./dist
+          destination_dir: ${{ github.ref_name == 'main' && '' || 'preview' }}
+          keep_files: ${{ github.ref_name != 'main' }}

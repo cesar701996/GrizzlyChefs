@@ -67,3 +67,60 @@
   border: 2px dashed var(--confirm); background: var(--confirm-bg); color: var(--confirm);
   font-weight: 600; font-size: .9em; white-space: normal;
 }
+
+/* ---------- Motion ----------
+ * Everything below is decoration. It all switches off for visitors whose
+ * device asks for reduced motion (see the media query at the end).
+ */
+@keyframes gc-rise { from { opacity: 0; transform: translateY(28px); } to { opacity: 1; transform: none; } }
+@keyframes gc-float { 0%, 100% { transform: translateY(0) rotate(-1deg); } 50% { transform: translateY(-12px) rotate(1deg); } }
+@keyframes gc-bob { 0%, 100% { transform: translateY(0) rotate(var(--r, 0deg)); } 50% { transform: translateY(-9px) rotate(calc(var(--r, 0deg) * -0.4)); } }
+@keyframes gc-spin { to { transform: rotate(360deg); } }
+@keyframes gc-sheen { 0% { transform: translateX(-150%) skewX(-20deg); } 55%, 100% { transform: translateX(350%) skewX(-20deg); } }
+@keyframes gc-marquee { to { transform: translateX(-50%); } }
+@keyframes gc-twinkle { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: .55; transform: scale(.82); } }
+
+@layer components {
+  /* fade-and-slide in, once, when scrolled into view (class "in" added by JS) */
+  .reveal { opacity: 0; transform: translateY(28px); transition: opacity .7s cubic-bezier(.2,.7,.2,1), transform .7s cubic-bezier(.2,.7,.2,1); transition-delay: var(--d, 0ms); }
+  .reveal.in { opacity: 1; transform: none; }
+  /* hero items animate in on page load */
+  .rise { animation: gc-rise .8s cubic-bezier(.2,.7,.2,1) both; animation-delay: var(--d, 0ms); }
+
+  .anim-float { animation: gc-float 7s ease-in-out infinite; }
+  .anim-bob { animation: gc-bob 4.6s ease-in-out infinite; animation-delay: var(--delay, 0s); transform: rotate(var(--r, 0deg)); }
+  .blob { border-radius: 42% 58% 63% 37% / 41% 44% 56% 59%; animation: gc-spin 36s linear infinite; }
+
+  /* a soft light sweep across a photo or button every few seconds */
+  .sheen { position: relative; overflow: hidden; isolation: isolate; }
+  .sheen::after { content: ""; position: absolute; inset: 0 auto 0 0; width: 35%; pointer-events: none;
+    background: linear-gradient(90deg, transparent, rgb(255 255 255 / .38), transparent);
+    animation: gc-sheen 6.5s ease-in-out infinite 1.2s; }
+
+  /* endless sideways scroll; the content is rendered twice so it loops seamlessly */
+  .marquee-wrap { overflow: hidden; }
+  .marquee { display: flex; width: max-content; animation: gc-marquee var(--dur, 30s) linear infinite; }
+  .marquee-wrap:hover .marquee, .marquee-wrap:focus-within .marquee { animation-play-state: paused; }
+
+  /* food cards: the photo lifts and tilts, the warm glow behind it grows */
+  .food-card { transition: transform .3s cubic-bezier(.2,.8,.2,1), box-shadow .3s; }
+  .food-card:hover, .food-card:focus-within { transform: translateY(-6px); box-shadow: 0 18px 40px -18px rgb(30 40 30 / .35); }
+  .food-photo { transition: transform .4s cubic-bezier(.2,.8,.25,1.3); }
+  .food-card:hover .food-photo, .food-card:focus-within .food-photo, .food-card:active .food-photo { transform: translateY(-6px) scale(1.07) rotate(-2.5deg); }
+  .food-glow { transition: transform .4s cubic-bezier(.2,.8,.2,1);
+    background: radial-gradient(circle, var(--confirm-bg) 0%, var(--confirm-bg) 52%, transparent 71%); }
+  .food-card:hover .food-glow, .food-card:focus-within .food-glow { transform: scale(1.15); }
+
+  .twinkle > span { display: inline-block; animation: gc-twinkle 2.4s ease-in-out infinite; }
+  .twinkle > span:nth-child(2) { animation-delay: .2s; } .twinkle > span:nth-child(3) { animation-delay: .4s; }
+  .twinkle > span:nth-child(4) { animation-delay: .6s; } .twinkle > span:nth-child(5) { animation-delay: .8s; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .reveal, .reveal.in { opacity: 1; transform: none; transition: none; }
+  .rise, .anim-float, .anim-bob, .blob, .marquee, .sheen::after, .twinkle > span { animation: none !important; }
+  .marquee-wrap { overflow-x: auto; }
+  .food-card, .food-photo, .food-glow { transition: none; }
+  .food-card:hover, .food-card:hover .food-photo, .food-card:hover .food-glow { transform: none; }
+}

@@ -1,4 +1,26 @@
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
+
+// lets us pass CSS custom properties (animation delays etc.) through style={}
+const cssVars = (o: Record<string, string>) => o as CSSProperties;
+
+// Adds the "in" class to every .reveal element once it scrolls into view.
+function useReveal() {
+  useEffect(() => {
+    const els = document.querySelectorAll<HTMLElement>(".reveal:not(.in)");
+    if (!("IntersectionObserver" in window)) {
+      els.forEach((el) => el.classList.add("in"));
+      return;
+    }
+    const io = new IntersectionObserver(
+      (entries) => entries.forEach((e) => {
+        if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); }
+      }),
+      { rootMargin: "0px 0px -8% 0px", threshold: 0.12 },
+    );
+    els.forEach((el) => io.observe(el));
+    return () => io.disconnect();
+  }, []);
+}
 
 const SITE = "https://grizzlychefs.com";
 const ORDER = `${SITE}/online-order`;
@@ -71,6 +93,7 @@ const fixes = [
   "Meal plan prices shown up front",
   "Real food photos with descriptive alt text, no stock images",
   "Every food photo shown whole, nothing cut off",
+  "Gentle motion that makes the food pop (it switches off for anyone whose phone asks for less motion)",
   "Hours block that never cuts off or overlaps on phones",
   "No leftover template text, demo products or stray characters",
   "Fewer third-party widgets for a faster page",
@@ -82,6 +105,8 @@ const socials = [
   { l: "TikTok", h: "https://www.tiktok.com/@grizzlychefs", d: "M16.6 2h-3.4v13.4a2.9 2.9 0 11-2-2.8V9.2a6.3 6.3 0 105.4 6.2V8.6a7.9 7.9 0 004.4 1.4V6.6a4.5 4.5 0 01-4.4-4.6z" },
 ];
 
+const ticker = ["Quesabirrias", "Munch Box", "Chicken & Waffles", "Mangonada", "Breakfast Burritos", "Double Cheese Burger", "Orange Chicken", "No delivery fee", "At your door in ~15 min"];
+
 const btnHoney = "pill-btn bg-honey text-honey-foreground hover:brightness-105";
 const btnForest = "pill-btn bg-forest text-forest-foreground hover:opacity-90";
 const btnOutline = "pill-btn border-2 border-forest text-forest hover:bg-forest hover:text-forest-foreground";
@@ -90,6 +115,14 @@ export default function App() {
   const [banner, setBanner] = useState(true);
   const [menu, setMenu] = useState(false);
   const [panel, setPanel] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+  useReveal();
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 8);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   return (
     <>
@@ -103,7 +136,7 @@ export default function App() {
         </div>
       )}
 
-      <header className="sticky top-0 z-40 border-b border-border bg-background/95 backdrop-blur">
+      <header className={`sticky top-0 z-40 border-b border-border bg-background/95 backdrop-blur transition-shadow duration-300 ${scrolled ? "shadow-lg shadow-forest/10" : ""}`}>
         <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-4 px-4">
           <a href="#top" className="flex items-center"><img src={LOGO} alt="Grizzly Chefs logo" width={183} height={44} className="h-11 w-auto" /></a>
           <nav aria-label="Main" className="hidden md:block">
@@ -129,40 +162,71 @@ export default function App() {
       </header>
 
       <main id="top">
-        {/* Hero: the photo is 3:4, so the frame is 3:4 too and nothing gets cropped */}
-        <section className="mx-auto grid max-w-6xl items-center gap-10 px-4 py-12 md:grid-cols-2 md:py-20">
-          <div>
-            <p className="mb-3 text-sm font-bold uppercase tracking-widest text-confirm">Berkeley, CA · Near UC Berkeley</p>
-            <h1 className="text-4xl font-black leading-[1.05] md:text-6xl">Hot, fresh food delivered across Berkeley in as little as 15 minutes.</h1>
-            <p className="mt-5 text-lg text-muted-foreground">Burgers, burritos, breakfast and more from Chef Felipe's kitchen. No delivery fee, ever.</p>
-            <div className="mt-7 flex flex-wrap gap-3">
-              <a href={ORDER} className={btnHoney}>Order now</a>
-              <a href={`${SITE}/catering`} className={btnOutline}>Plan catering</a>
+        {/* Hero: the photo is 3:4, so the frame is 3:4 too and nothing gets cropped.
+            Motion: the card floats, a light sweeps across it, the honey shape behind
+            it turns slowly and the stickers bob. */}
+        <section className="overflow-x-clip">
+          <div className="mx-auto grid max-w-6xl items-center gap-12 px-4 py-12 md:grid-cols-2 md:py-20">
+            <div>
+              <p className="rise mb-3 text-sm font-bold uppercase tracking-widest text-confirm">Berkeley, CA · Near UC Berkeley</p>
+              <h1 className="rise text-4xl font-black leading-[1.05] md:text-6xl" style={cssVars({ "--d": "90ms" })}>Hot, fresh food delivered across Berkeley in as little as 15 minutes.</h1>
+              <p className="rise mt-5 text-lg text-muted-foreground" style={cssVars({ "--d": "180ms" })}>Burgers, burritos, breakfast and more from Chef Felipe's kitchen. No delivery fee, ever.</p>
+              <div className="rise mt-7 flex flex-wrap gap-3" style={cssVars({ "--d": "270ms" })}>
+                <a href={ORDER} className={`${btnHoney} sheen shadow-lg shadow-honey/40`}>Order now</a>
+                <a href={`${SITE}/catering`} className={btnOutline}>Plan catering</a>
+              </div>
+              <ul className="rise mt-7 flex flex-wrap gap-x-5 gap-y-2 text-sm font-semibold" style={cssVars({ "--d": "360ms" })}>
+                <li><span className="text-confirm">★</span> 5.0 on Google · 31 reviews</li>
+                <li>No delivery fee</li>
+                <li>Delivery in ~15 min</li>
+              </ul>
+              <p className="rise mt-4 text-sm text-muted-foreground" style={cssVars({ "--d": "420ms" })}>Hours: <TC /></p>
             </div>
-            <ul className="mt-7 flex flex-wrap gap-x-5 gap-y-2 text-sm font-semibold">
-              <li><span className="text-confirm">★</span> 5.0 on Google · 31 reviews</li>
-              <li>No delivery fee</li>
-              <li>Delivery in ~15 min</li>
-            </ul>
-            <p className="mt-4 text-sm text-muted-foreground">Hours: <TC /></p>
+            <div className="rise relative mx-auto w-full max-w-md" style={cssVars({ "--d": "200ms" })}>
+              <div aria-hidden className="blob absolute -inset-5 bg-honey md:-inset-9" />
+              <div className="anim-float relative">
+                <div className="sheen rounded-3xl shadow-2xl">
+                  <img src={img("hero.jpg")} alt="Grizzly Chefs Munch Box with onion rings, jalapeño poppers, chicken nuggets, mozzarella sticks and fries, with two dipping sauces" width={600} height={800} className="aspect-[3/4] w-full object-cover" fetchPriority="high" />
+                </div>
+              </div>
+              <span className="anim-bob absolute -left-2 top-8 grid h-24 w-24 place-items-center rounded-full bg-forest p-2 text-center text-sm font-black leading-tight text-honey shadow-xl md:-left-10 md:h-28 md:w-28 md:text-base" style={cssVars({ "--r": "-10deg" })}>No delivery fee</span>
+              <span className="anim-bob absolute -right-2 bottom-14 grid h-24 w-24 place-items-center rounded-full border-4 border-honey bg-background p-2 text-center text-sm font-black leading-tight text-forest shadow-xl md:-right-10 md:h-28 md:w-28 md:text-base" style={cssVars({ "--r": "8deg", "--delay": "-2.3s" })}>At your door in ~15 min</span>
+            </div>
           </div>
-          <img src={img("hero.jpg")} alt="Grizzly Chefs Munch Box with onion rings, jalapeño poppers, chicken nuggets, mozzarella sticks and fries, with two dipping sauces" width={600} height={800} className="mx-auto aspect-[3/4] w-full max-w-md rounded-3xl object-cover shadow-2xl" fetchPriority="high" />
         </section>
+
+        {/* Ticker: an endless band of menu favorites */}
+        <div className="overflow-hidden py-3">
+          <div className="marquee-wrap -mx-2 -rotate-1 border-y-2 border-forest bg-honey py-3 text-forest">
+            <div className="marquee" style={cssVars({ "--dur": "38s" })}>
+              {[0, 1].map((k) => (
+                <ul key={k} aria-hidden={k === 1 ? true : undefined} className="flex shrink-0 items-center gap-6 pr-6 text-lg font-black uppercase tracking-tight md:gap-8 md:pr-8 md:text-2xl">
+                  {ticker.map((t) => (
+                    <li key={t} className="flex items-center gap-6 whitespace-nowrap md:gap-8">{t}<span aria-hidden className="text-base md:text-xl">✦</span></li>
+                  ))}
+                </ul>
+              ))}
+            </div>
+          </div>
+        </div>
 
         {/* Popular: whole photos on a white square, scaled to fit (object-contain) */}
         <section id="popular" className="bg-secondary py-16">
           <div className="mx-auto max-w-6xl px-4">
-            <h2 className="text-3xl font-black md:text-4xl">Popular right now</h2>
+            <h2 className="reveal text-3xl font-black md:text-4xl">Popular right now</h2>
             <ul className="mt-8 grid grid-cols-2 gap-4 md:grid-cols-4 md:gap-6">
-              {dishes.map((d) => (
-                <li key={d.n} className="flex flex-col overflow-hidden rounded-2xl bg-card shadow-sm">
-                  <div className="relative aspect-square bg-white">
-                    <img src={d.src} alt={d.alt} width={d.w} height={d.hgt} loading="lazy" className="absolute inset-0 h-full w-full object-contain p-3" />
+              {dishes.map((d, i) => (
+                <li key={d.n} className="reveal flex" style={cssVars({ "--d": `${(i % 4) * 90}ms` })}>
+                  <div className="food-card flex w-full flex-col overflow-hidden rounded-2xl bg-card shadow-sm">
+                  <div className="relative isolate aspect-square bg-white">
+                    <div aria-hidden className="food-glow absolute inset-[8%] rounded-full" />
+                    <img src={d.src} alt={d.alt} width={d.w} height={d.hgt} loading="lazy" className="food-photo absolute inset-0 h-full w-full object-contain p-3 mix-blend-multiply" />
                   </div>
                   <div className="flex flex-1 flex-col p-3 md:p-4">
                     <h3 className="font-bold leading-tight">{d.n}</h3>
                     <p className="mt-1 text-muted-foreground">{d.p}</p>
                     <a href={d.h} className="mt-auto pt-3 font-bold text-forest underline underline-offset-4" aria-label={`Order ${d.n}`}>Order →</a>
+                  </div>
                   </div>
                 </li>
               ))}
@@ -173,17 +237,20 @@ export default function App() {
 
         {/* Services */}
         <section id="services" className="mx-auto max-w-6xl px-4 py-16">
-          <h2 className="text-3xl font-black md:text-4xl">Delivery, catering and meal plans</h2>
+          <h2 className="reveal text-3xl font-black md:text-4xl">Delivery, catering and meal plans</h2>
           <div className="mt-8 grid gap-6 md:grid-cols-3">
-            {services.map((s) => (
-              <article key={s.t} className="flex flex-col overflow-hidden rounded-3xl bg-card shadow-sm">
-                <div className="relative aspect-[4/3] bg-white">
-                  <img src={s.src} alt={s.alt} width={s.w} height={s.hgt} loading="lazy" className="absolute inset-0 h-full w-full object-contain p-4" />
+            {services.map((s, i) => (
+              <article key={s.t} className="reveal flex" style={cssVars({ "--d": `${i * 110}ms` })}>
+                <div className="food-card flex w-full flex-col overflow-hidden rounded-3xl bg-card shadow-sm">
+                <div className="relative isolate aspect-[4/3] bg-white">
+                  <div aria-hidden className="food-glow absolute inset-x-[14%] inset-y-[4%] rounded-full" />
+                  <img src={s.src} alt={s.alt} width={s.w} height={s.hgt} loading="lazy" className="food-photo absolute inset-0 h-full w-full object-contain p-4 mix-blend-multiply" />
                 </div>
                 <div className="flex flex-1 flex-col gap-3 p-6">
                   <h3 className="text-2xl font-black">{s.t}</h3>
                   <p className="text-muted-foreground">{s.d}</p>
                   <a href={s.h} className={`${btnHoney} mt-auto self-start`}>{s.b}</a>
+                </div>
                 </div>
               </article>
             ))}
@@ -193,15 +260,17 @@ export default function App() {
         {/* Meal plans */}
         <section id="meal-plans" className="bg-forest py-16 text-forest-foreground">
           <div className="mx-auto max-w-6xl px-4">
-            <h2 className="text-3xl font-black md:text-4xl">Meal plans</h2>
-            <p className="mt-2 opacity-85">Weekday delivery, prices shown up front.</p>
+            <h2 className="reveal text-3xl font-black md:text-4xl">Meal plans</h2>
+            <p className="reveal mt-2 opacity-85">Weekday delivery, prices shown up front.</p>
             <div className="mt-8 grid gap-6 md:grid-cols-3">
-              {plans.map((p) => (
-                <article key={p.t} className="flex flex-col rounded-3xl bg-card p-6 text-card-foreground">
+              {plans.map((p, i) => (
+                <article key={p.t} className="reveal flex" style={cssVars({ "--d": `${i * 110}ms` })}>
+                <div className="food-card flex w-full flex-col rounded-3xl bg-card p-6 text-card-foreground">
                   <h3 className="text-2xl font-black">{p.t}</h3>
                   <ul className="mt-4 space-y-2">{p.inc.map((i) => <li key={i}>✓ {i}</li>)}</ul>
-                  <p className="mt-4 font-bold">{p.price}</p>
-                  <a href={p.h} className={`${btnHoney} mt-6`}>Enroll</a>
+                  <p className="mt-4 mb-6 font-bold">{p.price}</p>
+                  <a href={p.h} className={`${btnHoney} mt-auto`}>Enroll</a>
+                </div>
                 </article>
               ))}
             </div>
@@ -210,33 +279,42 @@ export default function App() {
 
         {/* Late plate: 3:4 photo in a 3:4 frame */}
         <section id="late-plate" className="mx-auto grid max-w-6xl items-center gap-10 px-4 py-16 md:grid-cols-2">
-          <div>
+          <div className="reveal">
             <h2 className="text-3xl font-black md:text-4xl">Late Plate for chapters</h2>
             <p className="mt-4 text-lg text-muted-foreground">Fraternity and sorority chapters get members' meals saved and delivered after events and late meetings. Members sign in with their chapter login. <TC>To confirm exact description</TC></p>
             <a href={`${SITE}/chapter-login`} className={`${btnForest} mt-6`}>Chapter sign in</a>
           </div>
-          <img src={img("lateplate.jpg")} width={600} height={800} alt="Plated Grizzly Chefs meal saved as a late plate for a chapter member" loading="lazy" className="mx-auto aspect-[3/4] w-full max-w-md rounded-3xl object-cover" />
+          <img src={img("lateplate.jpg")} width={600} height={800} alt="Plated Grizzly Chefs meal saved as a late plate for a chapter member" loading="lazy" className="reveal mx-auto aspect-[3/4] w-full max-w-md rounded-3xl object-cover shadow-xl" style={cssVars({ "--d": "120ms" })} />
         </section>
 
         {/* Reviews */}
         <section id="reviews" className="bg-secondary py-16">
           <div className="mx-auto max-w-6xl px-4 text-center">
-            <h2 className="text-3xl font-black md:text-5xl">5.0 <span className="text-confirm" aria-hidden>★★★★★</span><span className="sr-only">five stars</span></h2>
+            <h2 className="reveal text-3xl font-black md:text-5xl">5.0 <span className="twinkle text-confirm" aria-hidden><span>★</span><span>★</span><span>★</span><span>★</span><span>★</span></span><span className="sr-only">five stars</span></h2>
             <p className="mt-2 text-lg font-semibold">from 31 Google reviews</p>
-            <ul className="mt-8 grid gap-4 text-left sm:grid-cols-2 lg:grid-cols-4">
-              {reviews.map(([q, a]) => (
-                <li key={a}><figure className="h-full rounded-2xl bg-card p-6 shadow-sm"><blockquote className="text-lg font-semibold">“{q}”</blockquote><figcaption className="mt-3 text-muted-foreground">{a}</figcaption></figure></li>
+          </div>
+          {/* Reviews slide by on their own; hover or tab into them to pause */}
+          <div className="marquee-wrap mt-8">
+            <div className="marquee" style={cssVars({ "--dur": "42s" })}>
+              {[0, 1].map((k) => (
+                <ul key={k} aria-hidden={k === 1 ? true : undefined} className="flex shrink-0 gap-4 pr-4 text-left">
+                  {[...reviews, ...reviews].map(([q, a], j) => (
+                    <li key={j} aria-hidden={j >= reviews.length ? true : undefined} className="w-72 shrink-0 md:w-80"><figure className="h-full rounded-2xl bg-card p-6 shadow-sm"><span className="text-confirm" aria-hidden>★★★★★</span><blockquote className="mt-2 text-lg font-semibold">“{q}”</blockquote><figcaption className="mt-3 text-muted-foreground">{a}</figcaption></figure></li>
+                  ))}
+                </ul>
               ))}
-            </ul>
+            </div>
+          </div>
+          <div className="mx-auto max-w-6xl px-4 text-center">
             <a href="https://www.google.com/maps?cid=5101223044455455885" target="_blank" rel="noopener" className="mt-8 inline-block font-bold underline underline-offset-4">Read reviews on Google</a>
           </div>
         </section>
 
         {/* Contact */}
         <section id="contact" className="mx-auto max-w-6xl px-4 py-16">
-          <h2 className="text-3xl font-black md:text-4xl">Contact and hours</h2>
+          <h2 className="reveal text-3xl font-black md:text-4xl">Contact and hours</h2>
           <div className="mt-8 grid gap-8 md:grid-cols-2">
-            <div>
+            <div className="reveal">
               <dl className="space-y-5 text-lg">
                 <div><dt className="font-bold">Phone</dt><dd><a href="tel:+15107102011" className="font-semibold underline underline-offset-4">(510) 710-2011</a></dd></div>
                 <div><dt className="font-bold">Email</dt><dd><TC>To confirm: one email address</TC></dd></div>
@@ -245,7 +323,7 @@ export default function App() {
               </dl>
               <a href={`${SITE}/contact-us`} className={`${btnForest} mt-6`}>Contact us</a>
             </div>
-            <div className="rounded-3xl bg-card p-6 shadow-sm">
+            <div className="reveal rounded-3xl bg-card p-6 shadow-sm" style={cssVars({ "--d": "120ms" })}>
               <h3 className="text-xl font-black">Hours</h3>
               <table className="mt-4 w-full">
                 <caption className="sr-only">Opening hours by day</caption>
@@ -292,7 +370,7 @@ export default function App() {
 
       <button onClick={() => setPanel(true)} className={`${btnHoney} fixed bottom-4 left-4 z-40 hidden shadow-xl md:inline-flex`}>What changed?</button>
       <div className="fixed left-3 right-3 z-40 flex rounded-2xl border border-border bg-background px-3 py-3 shadow-xl md:hidden" style={{ bottom: "calc(56px + env(safe-area-inset-bottom))" }}>
-        <a href={ORDER} className={`${btnHoney} w-full whitespace-nowrap`}>Order now</a>
+        <a href={ORDER} className={`${btnHoney} sheen w-full whitespace-nowrap`}>Order now</a>
       </div>
       {panel && <ChangesPanel onClose={() => setPanel(false)} />}
     </>
