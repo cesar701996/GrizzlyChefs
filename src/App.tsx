@@ -104,22 +104,22 @@ export default function App() {
       )}
 
       <header className="sticky top-0 z-40 border-b border-border bg-background/95 backdrop-blur">
-        <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-4 px-4">
-          <a href="#top" className="flex items-center"><img src={LOGO} alt="Grizzly Chefs logo" width={183} height={44} className="h-11 w-auto" /></a>
-          <nav aria-label="Main" className="hidden md:block">
+        <div className="mx-auto flex h-20 max-w-6xl items-center justify-between gap-4 px-4">
+          <a href="#top" className="flex shrink-0 items-center"><img src={LOGO} alt="Grizzly Chefs logo" width={267} height={64} className="h-14 w-auto lg:h-16" /></a>
+          <nav aria-label="Main" className="hidden lg:block">
             <ul className="flex gap-6 font-semibold">
-              {nav.map(([l, h]) => <li key={l}><a href={h} className="hover:text-confirm">{l}</a></li>)}
+              {nav.map(([l, h]) => <li key={l}><a href={h} className="whitespace-nowrap hover:text-confirm">{l}</a></li>)}
             </ul>
           </nav>
           <div className="flex items-center gap-2">
-            <a href={ORDER} className={`${btnHoney} hidden sm:inline-flex`}>Order now</a>
-            <button className="grid h-12 w-12 place-items-center rounded-full hover:bg-muted md:hidden" aria-label="Menu" aria-expanded={menu} aria-controls="mobile-nav" onClick={() => setMenu(!menu)}>
+            <a href={ORDER} className={`${btnHoney} hidden whitespace-nowrap sm:inline-flex`}>Order now</a>
+            <button className="grid h-12 w-12 place-items-center rounded-full hover:bg-muted lg:hidden" aria-label="Menu" aria-expanded={menu} aria-controls="mobile-nav" onClick={() => setMenu(!menu)}>
               <span className="text-2xl" aria-hidden>{menu ? "✕" : "☰"}</span>
             </button>
           </div>
         </div>
         {menu && (
-          <nav id="mobile-nav" aria-label="Mobile" className="border-t border-border px-4 pb-4 md:hidden">
+          <nav id="mobile-nav" aria-label="Mobile" className="border-t border-border px-4 pb-4 lg:hidden">
             <ul>
               {nav.map(([l, h]) => <li key={l}><a href={h} onClick={() => setMenu(false)} className="block py-3 text-lg font-semibold">{l}</a></li>)}
             </ul>

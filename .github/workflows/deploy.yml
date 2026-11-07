@@ -29,3 +29,5 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./dist
+          # keep the /preview/ folder that the motion-preview branch publishes
+          keep_files: true
